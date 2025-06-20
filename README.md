@@ -1,38 +1,36 @@
 # 🤖 My AI Chatbot Project (LangChain + TwitterClone)
 
-Hey! This is a fun project I built to explore AI chatbots using LangChain and also integrate it with a Twitter Clone to post AI-generated tweets.
+Hi! I’m **Khwairakpam Prosenjit Singha**, and this is a project I built to explore AI chatbots using LangChain + OpenRouter and integrate it with a Twitter Clone API to auto-post AI-generated tweets.
 
-### 🔧 Tech Stack I Used
-- **Frontend**: Solid.js + Tailwind CSS + Vite
-- **Backend**: FastAPI with LangChain and OpenAI
-- **Hosting**: Cloudflare Pages (frontend), Render for backend
+---
+
+## 🔧 Tech Stack I Used
+- **Frontend**: Solid.js + Vite
+- **Backend**: FastAPI with LangChain + OpenRouter
+- **Hosting**: Cloudflare Pages (frontend), Render (planned backend)
 - **Database**: Vercel (planned for future)
-- **Extras**: Tweets get auto-posted using a Twitter Clone API
+- **Extras**: Twitter Clone API for posting tweets
 
 ---
 
 ## 📁 Project Structure
 ```
-MyProjects/
+ai_posting_app/
 ├── frontend/           # Solid.js UI
-│   ├── src/
-│   │   └── App.jsx     # Main chat app
-│   ├── index.html
+│   ├── src/App.jsx     # Main chat app
 │   └── ...
-│
 ├── backend/            # FastAPI + LangChain logic
 │   ├── main.py
 │   └── requirements.txt
-│
 └── README.md           # This file
 ```
 
 ---
 
 ## 🚀 Features
-- You can chat with an AI (powered by OpenAI)
-- The reply gets posted as a tweet via Twitter Clone API
-- All built from scratch using Solid.js & FastAPI
+- Chat with an AI powered by OpenRouter / LangChain
+- Automatically post AI-generated replies as tweets using the Twitter Clone API
+- Light/dark mode toggle for the UI
 
 ---
 
@@ -41,96 +39,57 @@ MyProjects/
 ### 🧠 Backend (FastAPI)
 ```bash
 cd backend
+python -m venv venv
+.\venv\Scripts\activate
 pip install -r requirements.txt
+uvicorn main:app --reload
 ```
+👉 API available at: `http://127.0.0.1:8000/docs`
 
-- In `main.py`, paste your OpenAI API key:
-```python
-os.environ["OPENAI_API_KEY"] = "sk-your-key-here"
+➡ Make sure to add your API keys in a `.env` file:
 ```
-
-- Then run the API:
-```bash
-python -m uvicorn main:app --reload
+OPENROUTER_API_KEY=sk-or-your-openrouter-key
+TWITTER_API_KEY=your-twitter-clone-api-key
 ```
-> Your API will be at `http://localhost:8000`
+➡ In `main.py`, update the username to match the one assigned to your API key.
 
 ---
 
 ### 💻 Frontend (Solid.js)
 ```bash
-cd ../frontend
+cd frontend
 npm install
-```
-
-- Open `src/App.jsx`
-- Replace the API key and username:
-```js
-"api-key": "your_api_key_here",
-username: "your_username_here"
-```
-
-- Then start it:
-```bash
 npm run dev
 ```
-> Your app should open at `http://localhost:3000`
+👉 App available at: `http://localhost:5173`
 
 ---
 
-## 💬 Testing the Chatbot
-1. Visit `http://localhost:3000`
-2. Type a message in the chat box
-3. The AI will reply
-4. That reply is also posted as a tweet to the TwitterClone API!
-5. Check [https://twitter-clone-ui.pages.dev](https://twitter-clone-ui.pages.dev)
-   - Enter your username to see your AI tweets
+## 💬 API Flow
+1️⃣ Frontend sends a prompt to `/chat`  
+2️⃣ Backend generates a response using OpenRouter / LangChain  
+3️⃣ Backend posts that response as a tweet via Twitter Clone API  
+4️⃣ You can check your tweet at: [https://twitter-clone-ui.pages.dev](https://twitter-clone-ui.pages.dev)
 
 ---
 
-## 📡 APIs Used
-
-### 🔁 Twitter Clone Post API
-**POST** `https://twitterclone-server-2xz2.onrender.com/post_tweet`
-
+## 📡 Twitter Clone API Example
+POST `https://twitterclone-server-2xz2.onrender.com/post_tweet`  
 Headers:
-```http
-api-key: your_api_key_here
 ```
-
+api-key: your-twitter-clone-api-key
+```
 Body:
 ```json
 {
-  "username": "yourusername",
-  "text": "message from AI"
+  "username": "your_assigned_username",
+  "text": "AI generated tweet"
 }
 ```
-
-### 💬 Local Chat Endpoint
-**POST** `http://localhost:8000/chat`
-
-Body:
-```json
-{
-  "prompt": "Hello!"
-}
-```
-Response:
-```json
-{
-  "response": "AI reply here"
-}
-```
-
----
-
-## 🚀 Deployment
-- I plan to host the backend on **Render**
-- Frontend will go live via **Cloudflare Pages**
 
 ---
 
 ## 🙋‍♂️ About Me
-Hi! I'm **Khwairakpam Prosenjit Singha** and I built this project as part of my learning journey. Hope you liked it!
-
-Feel free to reach out if you want to collaborate or have suggestions. :)
+I’m **Khwairakpam Prosenjit Singha** — I built this project as part of my internship.  
+It was fun working on integrating AI with social media-like functionality.  
+Feel free to check it out or share feedback!
