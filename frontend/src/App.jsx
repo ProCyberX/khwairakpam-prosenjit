@@ -4,12 +4,13 @@ function App() {
   const [prompt, setPrompt] = createSignal("");
   const [response, setResponse] = createSignal("");
   const [status, setStatus] = createSignal("");
+  const [darkMode, setDarkMode] = createSignal(false);
 
   const sendPrompt = async () => {
     const res = await fetch("http://localhost:8000/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: prompt() })
+      body: JSON.stringify({ message: prompt() }) // ✅ fixed key
     });
     const data = await res.json();
     setResponse(data.response);
@@ -31,7 +32,26 @@ function App() {
   };
 
   return (
-    <div style="padding: 2rem; max-width: 600px; margin: auto; font-family: sans-serif;">
+    <div
+      style={`
+        padding: 2rem;
+        max-width: 600px;
+        margin: auto;
+        font-family: sans-serif;
+        background-color: ${darkMode() ? "#1e1e1e" : "#ffffff"};
+        color: ${darkMode() ? "#f1f1f1" : "#000000"};
+        min-height: 100vh;
+      `}
+    >
+      <div style="display: flex; justify-content: flex-end;">
+        <button
+          onClick={() => setDarkMode(!darkMode())}
+          style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"
+        >
+          {darkMode() ? "☀️" : "🌙"}
+        </button>
+      </div>
+
       <h1 style="font-size: 1.5rem; margin-bottom: 1rem;">How can I help you today?</h1>
       <input
         type="text"
