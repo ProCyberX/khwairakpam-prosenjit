@@ -19,10 +19,10 @@ function App() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "api-key": "khwairakpam_f5f7b645dc65e1a0248afb3a025d0b44"
+        "api-key": "your api key"
       },
       body: JSON.stringify({
-        username: "Khwairakpam Prosenjit",
+        username: "your username",
         text: data.response
       })
     });
