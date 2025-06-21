@@ -1,140 +1,97 @@
-import { createSignal, createEffect } from "solid-js";
+import os
+import requests
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
-function App() {
-  const [prompt, setPrompt] = createSignal("");
-  const [response, setResponse] = createSignal("");
-  const [status, setStatus] = createSignal("");
-  const [tweets, setTweets] = createSignal([]);
-  const [darkMode, setDarkMode] = createSignal(false);
+load_dotenv()
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+TWITTER_API_KEY = os.getenv("TWITTER_API_KEY")
 
-  const sendPrompt = async () => {
-    setStatus("Generating...");
-    const res = await fetch("http://localhost:8000/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: prompt() })
-    });
-    const data = await res.json();
-    setResponse(data.response);
-    setStatus("✅ Preview ready. Click Post to publish.");
-  };
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
- const postTweet = async () => {
-  setStatus("Posting...");
-  const postRes = await fetch("http://localhost:8000/post_tweet", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: "khwairakpam",
-      text: response()
-    })
-  });
+class ChatRequest(BaseModel):
+    message: str
 
-  if (postRes.ok) {
-    setStatus("✅ Tweet posted!");
-    setPrompt("");
-    setResponse("");
-    await fetchTweets();
-  } else {
-    setStatus("❌ Failed to post");
-  }
-};
+class PostTweetRequest(BaseModel):
+    username: str
+    text: str
 
+def save_tweet_to_supabase(username, text):
+    url = f"{SUPABASE_URL}/rest/v1/ai_tweets"
+    headers = {
+        "apikey": SUPABASE_SERVICE_ROLE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+        "Content-Type": "application/json"
+    }
+    data = {"username": username, "text": text}
+    r = requests.post(url, json=data, headers=headers)
+    if not r.ok:
+        print(f"Supabase error: {r.status_code} {r.text}")
+        raise HTTPException(status_code=500, detail="Supabase insert failed")
 
-  const fetchTweets = async () => {
-    const res = await fetch("http://localhost:8000/tweets");
-    const data = await res.json();
-    setTweets(data.sort((a, b) => b.id - a.id)); // Ensure descending order
-  };
+@app.post("/chat")
+async def chat(req: ChatRequest):
+    # Generate AI response
+    ai_resp = requests.post(
+        "https://openrouter.ai/api/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": "openai/gpt-3.5-turbo",
+            "messages": [{"role": "user", "content": req.message}]
+        }
+    )
 
-  createEffect(() => {
-    fetchTweets();
-  });
+    if not ai_resp.ok:
+        raise HTTPException(status_code=500, detail="AI generation failed")
 
-  return (
-    <div
-      style={`
-        padding: 2rem;
-        max-width: 600px;
-        margin: auto;
-        font-family: sans-serif;
-        background-color: ${darkMode() ? "#1e1e1e" : "#ffffff"};
-        color: ${darkMode() ? "#f1f1f1" : "#000000"};
-        min-height: 100vh;
-      `}
-    >
-      <div style="display: flex; justify-content: flex-end;">
-        <button
-          onClick={() => setDarkMode(!darkMode())}
-          style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"
-        >
-          {darkMode() ? "☀️" : "🌙"}
-        </button>
-      </div>
+    ai_data = ai_resp.json()
+    ai_content = ai_data["choices"][0]["message"]["content"]
 
-      <h1 style="font-size: 1.5rem; margin-bottom: 1rem;">How can I help you today?</h1>
+    # Return generated text only — no posting yet
+    return {"response": ai_content}
 
-      <input
-        type="text"
-        value={prompt()}
-        onInput={(e) => setPrompt(e.target.value)}
-        placeholder="Ask me anything..."
-        style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;"
-      />
+@app.post("/post_tweet")
+async def post_tweet(req: PostTweetRequest):
+    # Post to your Twitter clone
+    tweet_resp = requests.post(
+        "https://twitterclone-server-2xz2.onrender.com/post_tweet",
+        headers={
+            "Content-Type": "application/json",
+            "api-key": TWITTER_API_KEY
+        },
+        json={"username": req.username, "text": req.text}
+    )
 
-      <button onClick={sendPrompt} style="padding: 0.5rem 1rem;">Ask</button>
+    if not tweet_resp.ok:
+        raise HTTPException(status_code=500, detail="Tweet post failed")
 
-      {response() && (
-        <div
-          style={`
-            border: 1px dashed ${darkMode() ? "#666" : "#999"};
-            padding: 1rem;
-            margin-top: 1rem;
-            background-color: ${darkMode() ? "#2e2e2e" : "#f1f1f1"};
-            border-radius: 8px;
-          `}
-        >
-          <textarea
-            value={response()}
-            onInput={(e) => setResponse(e.target.value)}
-            style="width: 100%; min-height: 100px; padding: 0.5rem;"
-          />
-          <button
-            onClick={postTweet}
-            style="margin-top: 0.5rem; padding: 0.5rem 1rem;"
-          >
-            Post this Tweet
-          </button>
-        </div>
-      )}
+    # Save to Supabase
+    save_tweet_to_supabase(req.username, req.text)
 
-      <p style="color: green; margin-top: 0.5rem;">{status()}</p>
+    return {"message": "Tweet posted successfully"}
 
-      <div style="margin-top: 2rem;">
-        <h2>Latest Tweets</h2>
-        <ul style="list-style: none; padding: 0;">
-          {tweets().map(tweet => (
-            <li
-              style={`
-                border: 1px solid ${darkMode() ? "#444" : "#ccc"};
-                border-radius: 8px;
-                padding: 1rem;
-                margin-bottom: 1rem;
-                background-color: ${darkMode() ? "#2e2e2e" : "#f9f9f9"};
-              `}
-            >
-              <p style="margin: 0 0 0.5rem 0;">{tweet.text}</p>
-              <small style={`color: ${darkMode() ? "#aaa" : "#555"};`}>
-                Written by {tweet.username}
-              </small>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
-
-export default App;
+@app.get("/tweets")
+async def get_tweets():
+    r = requests.get(
+        f"{SUPABASE_URL}/rest/v1/ai_tweets?select=*&order=created_at.desc",
+        headers={
+            "apikey": SUPABASE_SERVICE_ROLE_KEY,
+            "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}"
+        }
+    )
+    if not r.ok:
+        raise HTTPException(status_code=500, detail="Fetch tweets failed")
+    return r.json()
