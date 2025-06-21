@@ -69,12 +69,12 @@ npm run dev
 1️⃣ Frontend sends a prompt to `/chat`  
 2️⃣ Backend generates a response using OpenRouter / LangChain  
 3️⃣ Backend posts that response as a tweet via Twitter Clone API  
-4️⃣ You can check your tweet at: [https://twitter-clone-ui.pages.dev](https://twitter-clone-ui.pages.dev)
+4️⃣ You can check your tweet also
 
 ---
 
 ## 📡 Twitter Clone API Example
-POST `https://twitterclone-server-2xz2.onrender.com/post_tweet`  
+POST `
 Headers:
 ```
 api-key: your-twitter-clone-api-key
