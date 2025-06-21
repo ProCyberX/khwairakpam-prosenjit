@@ -22,6 +22,10 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     message: str
 
+class PostTweetRequest(BaseModel):
+    username: str
+    text: str
+
 def save_tweet_to_supabase(username, text):
     url = f"{SUPABASE_URL}/rest/v1/ai_tweets"
     headers = {
@@ -37,6 +41,7 @@ def save_tweet_to_supabase(username, text):
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
+    # Generate AI response
     ai_resp = requests.post(
         "https://openrouter.ai/api/v1/chat/completions",
         headers={
@@ -55,8 +60,28 @@ async def chat(req: ChatRequest):
     ai_data = ai_resp.json()
     ai_content = ai_data["choices"][0]["message"]["content"]
 
-
+    # Return generated text only — no posting yet
     return {"response": ai_content}
+
+@app.post("/post_tweet")
+async def post_tweet(req: PostTweetRequest):
+    # Post to your Twitter clone
+    tweet_resp = requests.post(
+        "https://twitterclone-server-2xz2.onrender.com/post_tweet",
+        headers={
+            "Content-Type": "application/json",
+            "api-key": TWITTER_API_KEY
+        },
+        json={"username": req.username, "text": req.text}
+    )
+
+    if not tweet_resp.ok:
+        raise HTTPException(status_code=500, detail="Tweet post failed")
+
+    # Save to Supabase
+    save_tweet_to_supabase(req.username, req.text)
+
+    return {"message": "Tweet posted successfully"}
 
 @app.get("/tweets")
 async def get_tweets():
@@ -70,24 +95,3 @@ async def get_tweets():
     if not r.ok:
         raise HTTPException(status_code=500, detail="Fetch tweets failed")
     return r.json()
-
-
-class TweetRequest(BaseModel):
-    username: str
-    text: str
-
-@app.post("/post_tweet")
-async def post_tweet(req: TweetRequest):
-    tweet_resp = requests.post(
-        "https://twitterclone-server-2xz2.onrender.com/post_tweet",
-        headers={
-            "Content-Type": "application/json",
-            "api-key": TWITTER_API_KEY
-        },
-        json={"username": req.username, "text": req.text}
-    )
-    if not tweet_resp.ok:
-        raise HTTPException(status_code=500, detail="Failed to post to Twitter‑clone")
-
-    save_tweet_to_supabase(req.username, req.text)
-    return {"message": "Tweet posted and saved"}
