@@ -1,95 +1,96 @@
-# 🤖 My AI Chatbot Project (LangChain + TwitterClone)
+# 🧠 AI Tweet Generator with Image Generation
 
-Hi! I’m **Khwairakpam Prosenjit Singha**, and this is a project I built to explore AI chatbots using LangChain + OpenRouter and integrate it with a Twitter Clone API to auto-post AI-generated tweets.
+An intelligent and responsive AI-based tweet generator built and customized by **Khwairakpam Prosenjit Singha** during the Yupcha Internship. This full-stack project combines the power of **AI**, **image generation**, and a sleek interface to deliver a smooth tweet-creation experience for users.
 
----
-
-## 🔧 Tech Stack I Used
-- **Frontend**: Solid.js + Vite
-- **Backend**: FastAPI with LangChain + OpenRouter
-- **Hosting**: Cloudflare Pages (frontend), Render (planned backend)
-- **Database**: Vercel (planned for future)
-- **Extras**: Twitter Clone API for posting tweets
+This application uses **Solid.js** on the frontend and **FastAPI** on the backend, integrating AI via **OpenRouter** and storing data using **Supabase**.
 
 ---
 
-## 📁 Project Structure
+## 🚀 Tech Stack
+
+### 🖥️ Frontend
+- **Solid.js** – Reactive JavaScript UI framework for fast rendering
+- **Vite** – Lightning-fast build tool for modern frontend development
+
+### 🧠 Backend
+- **FastAPI** – High-performance backend framework for Python
+- **OpenRouter** – Unified API to connect to various AI models (OpenAI, Anthropic, etc.)
+
+### 🗃️ Database
+- **Supabase** – Open-source Firebase alternative used for authentication, session management, and tweet history  
+  _(Hosted on Vercel)_
+
+### ☁️ Deployment
+- **Frontend** → Deployed on **Cloudflare Pages**
+- **Backend** → Hosted on **Render**
+
+---
+
+## 💡 Features
+
+- AI-generated tweet creation with optional image generation
+- Editable previews before final post
+- Tweet history tracking
+- Light & Dark mode toggle
+- Backend powered by Supabase for real-time database and session handling
+
+---
+
+## 🛠️ Getting Started
+
+### 1. Clone the Repository
+```bash
+git clone 
+cd ai-tweet-generator
 ```
-ai_posting_app/
-├── frontend/           # Solid.js UI
-│   ├── src/App.jsx     # Main chat app
-│   └── ...
-├── backend/            # FastAPI + LangChain logic
-│   ├── main.py
-│   └── requirements.txt
-└── README.md           # This file
-```
 
----
-
-## 🚀 Features
-- Chat with an AI powered by OpenRouter / LangChain
-- Automatically post AI-generated replies as tweets using the Twitter Clone API
-- Light/dark mode toggle for the UI
-
----
-
-## 🔌 How to Set It Up
-
-### 🧠 Backend (FastAPI)
+### 2. Backend Setup
 ```bash
 cd backend
 python -m venv venv
-.\venv\Scripts\activate
+venv\Scripts\activate  # On Windows
 pip install -r requirements.txt
+```
+
+Then, create a `.env` file inside the `/backend` folder with your environment variables:
+
+```env
+DATABASE_URL=your_database_url
+OPENROUTER_API_KEY=your_openrouter_api_key
+OPENROUTER_URL=https://openrouter.ai/api/v1
+OPENROUTER_MODEL=your_model_name
+
+TWITTERCLONE_BASE_URL=your_base_url
+TWITTERCLONE_API_KEY=your_twitter_api_key
+```
+
+Now run the backend server:
+```bash
 uvicorn main:app --reload
 ```
-👉 API available at: `http://127.0.0.1:8000/docs`
 
-➡ Make sure to add your API keys in a `.env` file:
-```
-OPENROUTER_API_KEY=sk-or-your-openrouter-key
-TWITTER_API_KEY=your-twitter-clone-api-key
-```
-➡ In `main.py`, update the username to match the one assigned to your API key.
-
----
-
-### 💻 Frontend (Solid.js)
+### 3. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-👉 App available at: `http://localhost:5173`
+
+The app should now be accessible at `http://localhost:3000`.
 
 ---
 
-## 💬 API Flow
-1️⃣ Frontend sends a prompt to `/chat`  
-2️⃣ Backend generates a response using OpenRouter / LangChain  
-3️⃣ Backend posts that response as a tweet via Twitter Clone API  
-4️⃣ You can check your tweet also
+## 📌 Notes
+
+--Ensure all dependencies are installed correctly, especially for **Pydantic**, since version 2+ introduces some breaking changes.
+- Make sure the `.env` file matches the keys expected by your backend `Settings` model.
 
 ---
 
-## 📡 Twitter Clone API Example
-POST `
-Headers:
-```
-api-key: your-twitter-clone-api-key
-```
-Body:
-```json
-{
-  "username": "your_assigned_username",
-  "text": "AI generated tweet"
-}
-```
+## 🙌 Author
+Built and maintained by **Khwai** as part of the **Yupcha Internship Program** ✨
 
 ---
 
-## 🙋‍♂️ About Me
-I’m **Khwairakpam Prosenjit Singha** — I built this project as part of my internship.  
-It was fun working on integrating AI with social media-like functionality.  
-Feel free to check it out or share feedback!
+## 📝 License
+This project is open for learning and demo purposes. For any serious use or contributions, please reach out via GitHub to Me.
