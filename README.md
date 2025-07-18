@@ -88,7 +88,7 @@ The app should now be accessible at `http://localhost:3000`.
 ---
 
 ## 🙌 Author
-Built and maintained by **Khwai** as part of the **Yupcha Internship Program** ✨
+Built and maintained by **Khwairakpam Prosenjit Singha** as part of the **Yupcha Internship Program** ✨
 
 ---
 
