@@ -1,6 +1,6 @@
-# 🧠 AI Tweet Generator with Image Generation
+# 🧠 AI Tweet Generator
 
-An intelligent and responsive AI-based tweet generator built and customized by **Khwairakpam Prosenjit Singha** during the Yupcha Internship. This full-stack project combines the power of **AI**, **image generation**, and a sleek interface to deliver a smooth tweet-creation experience for users.
+An intelligent and responsive AI-based tweet generator built and customized by **Khwairakpam Prosenjit Singha** during the Yupcha Internship. This full-stack project combines the power of **AI**, and a sleek interface to deliver a smooth tweet-creation experience for users.
 
 This application uses **Solid.js** on the frontend and **FastAPI** on the backend, integrating AI via **OpenRouter** and storing data using **Supabase**.
 
@@ -28,7 +28,7 @@ This application uses **Solid.js** on the frontend and **FastAPI** on the backen
 
 ## 💡 Features
 
-- AI-generated tweet creation with optional image generation
+- AI-generated tweet creation
 - Editable previews before final post
 - Tweet history tracking
 - Light & Dark mode toggle
