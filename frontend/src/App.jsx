@@ -1,5 +1,4 @@
 import { createSignal, createResource } from "solid-js";
-
 const fetchTweets = async () => {
   const res = await fetch("http://localhost:8000/tweets");
   return res.json();
